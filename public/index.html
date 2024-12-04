@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+
+    <script>
+        // Configuração inicial do Tailwind CSS
+        tailwind.config = {
+        darkMode: 'class',
+        };
+    </script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/275b5d5243.js" crossorigin="anonymous"></script>
+
+    <title>Faz Ou Bebe</title>
+</head>
+<style>
+    /* CSS para navegadores baseados em WebKit */
+    html {
+      border-radius: 100px;
+      scrollbar-width: none;
+      scrollbar-color: #008fd1 white;
+    }
+
+    /* Para WebKit */
+    ::-webkit-scrollbar {
+      border-radius: 100px;
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #008fd1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #f1f1f1;
+      border-radius: 100px;
+      border: 3px solid #f1f1f1;
+    }
+
+    ::-webkit-scrollbar {
+      border-radius: 100px;
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #008fd1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #f1f1f1;
+      border-radius: 100px;
+      border: 3px solid #f1f1f1;
+    }
+</style>
+<body class="bg-zinc-800 text-white">
+    <div class="pt-5 mt-5 container justify-center m-auto w-max-screen px-5">
+        <div class="container flex gap-4 justify-center min-w-[500px]">
+            <div id="carta">
+                <img src="img/capa.png" class="w-[210px] rounded">
+            </div>
+
+            <div id="monte">
+                <img src="img/baralho.png" alt="Monte de cartas" class="w-[300px]">
+            </div>
+        </div>
+    
+        <div id="historico" class="justify-left mt-5 pt-9">
+            <h3>Histórico de Cartas Sorteadas:</h3>
+            <ul id="historicoLista" class="flex flex-wrap gap-1"></ul>
+        </div>
+    
+        <button id="botaoNovoJogo">Novo Jogo</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const monte = document.getElementById('monte');
+        const cartaElement = document.getElementById('carta');
+        const historicoLista = document.getElementById('historicoLista');
+        const botaoNovoJogo = document.getElementById('botaoNovoJogo');
+
+        // Quando uma nova carta for sorteada
+        socket.on('newCard', (cardPath) => {
+            // Exibe a carta sorteada
+            cartaElement.innerHTML = `<img src="${cardPath}" class="w-[210px] rounded">`;
+
+            // Adiciona a carta ao início do histórico
+            const li = document.createElement('li');
+            li.innerHTML = `<img src="${cardPath}" class="rounded" alt="Carta" style="max-width: 150px; margin-right: 10px;">`;
+
+            // Adiciona o novo item ao início da lista
+            historicoLista.prepend(li);
+        });
+
+        // Quando todas as cartas forem sorteadas
+        socket.on('noMoreCards', (message) => {
+            cartaElement.innerHTML = `<p>${message}</p>`;
+        });
+
+        // Quando clicar no monte (imagem)
+        monte.addEventListener('click', () => {
+            socket.emit('clickMonte'); // Solicita uma carta do servidor
+        });
+
+        // Quando clicar no botão "Novo Jogo"
+        botaoNovoJogo.addEventListener('click', () => {
+            socket.emit('resetGame'); // Reinicia o jogo no servidor
+            cartaElement.innerHTML = '<img src="img/capa.png" class="w-[210px] rounded">'; // Limpa a carta exibida
+            historicoLista.innerHTML = ''; // Limpa o histórico de cartas
+        });
+    </script>
+</body>
+</html>
