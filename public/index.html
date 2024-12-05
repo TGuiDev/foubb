@@ -160,12 +160,14 @@
     </div>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
-        const socket = io();
+        // Atualizar a URL para apontar para o seu servidor no Render
+        const socket = io(window.location.origin);  // Conecta ao servidor atual
+    
         const monte = document.getElementById('monte');
         const cartaElement = document.getElementById('carta');
         const historicoLista = document.getElementById('historicoLista');
         const botaoNovoJogo = document.getElementById('botaoNovoJogo');
-    
+        
         // Quando uma nova carta for sorteada
         socket.on('newCard', (cardPath) => {
             // Aplica a animação de virada na carta
@@ -213,6 +215,5 @@
             socket.emit('clickMonte'); // Reemite para começar o jogo novamente
         });
     </script>
-    
 </body>
 </html>
