@@ -6,7 +6,12 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+    cors: {
+        origin: "*",  // Permite conexões de qualquer origem (necessário para o OnRender)
+        methods: ["GET", "POST"]
+    }
+});
 
 // Serve os arquivos estáticos da pasta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
@@ -78,7 +83,7 @@ io.on('connection', (socket) => {
     });
 });
 
-// Inicia o servidor na porta especificada pelo Render
+// Inicia o servidor na porta especificada pelo OnRender
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
