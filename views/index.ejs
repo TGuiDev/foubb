@@ -95,10 +95,10 @@
             <div id="carta" class="carta-container">
                 <div class="carta-inner">
                     <div class="carta-front">
-                        <img src="img/capa.png" class="w-[210px] rounded">
+                        <img src="img/capa.png" class="w-[500px] rounded">
                     </div>
                     <div class="carta-back">
-                        <img src="img/capa.png" class="w-[210px] rounded">
+                        <img src="img/capa.png" class="w-[500px] rounded">
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@
             const cartaInner = cartaElement.querySelector('.carta-inner');
             cartaInner.classList.add('flip');
             setTimeout(() => {
-                cartaElement.querySelector('.carta-front').innerHTML = `<img src="${cardPath}" class="w-[210px] rounded">`;
+                cartaElement.querySelector('.carta-front').innerHTML = `<img src="${cardPath}" class="w-[500px] rounded">`;
             }, 500);
 
             // Adiciona a carta ao histórico
@@ -165,18 +165,13 @@
 
         // Novo jogo
         function resetGame() {
-            cartaElement.innerHTML = '<img src="img/capa.png" class="flip w-[210px] rounded">';
+            cartaElement.innerHTML = '<img src="img/capa.png" class="flip w-[500px] rounded">';
             historicoLista.innerHTML = '';
         }
 
         // Quando clicar no monte (imagem)
         monte.addEventListener('click', () => {
             getRandomCard(); // Sorteia uma carta
-        });
-
-        // Quando clicar no botão "Novo Jogo"
-        botaoNovoJogo.addEventListener('click', () => {
-            resetGame(); // Reinicia o jogo
         });
     </script>
 </body>

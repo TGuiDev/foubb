@@ -24,14 +24,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-
-app.use('/cards', express.static(path.join(__dirname, 'public/cards')));
 app.use(express.static('public'));
 
 const cardsFolder = path.join(__dirname, 'public/cards');
 
 
-app.get('/api/cards', (req, res) => {
+app.get('/api/cards', async (req, res) => {
     fs.readdir(cardsFolder, (err, files) => {
         if (err) {
             return res.status(500).send('Erro ao ler a pasta');
@@ -45,10 +43,8 @@ app.get('/api/cards', (req, res) => {
     });
 });
 
-
-
 app.get('/', (req, res) => {
-    res.render('index',)
+    res.render('index',);
 });
 
 app.listen(port, () => {
