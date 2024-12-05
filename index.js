@@ -1,111 +1,49 @@
+console.clear();
 const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const session = require('express-session');
+
+require('colors')
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
-    cors: {
-        origin: "*",  // Permite conexões de qualquer origem (necessário para o OnRender)
-        methods: ["GET", "POST"]
-    }
-});
+const port = 3000;
 
-// Caminho da pasta onde estão as cartas
-const cardsFolder = path.join(__dirname, 'public/cards');
+app.use(
+  session({
+    secret: "SDFG3-480H3-089HG-370G2-0GHGH-2G24G",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 
-// Servir os arquivos estáticos
+app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
+
+
 app.use(express.static('public'));
 
+const cardsFolder = path.join(__dirname, 'public/cards');
 app.get('/api/cards', (req, res) => {
     fs.readdir(cardsFolder, (err, files) => {
-        if (err) {
-            return res.status(500).send('Erro ao ler a pasta');
-        }
-        
-        // Filtra os arquivos para pegar apenas imagens PNG
+        if (err) { return res.status(500).send('Erro ao ler a pasta') }
+
         const imageFiles = files.filter(file => file.endsWith('.png')).map(file => `/cards/${file}`);
-        
-        res.json(imageFiles); // Envia a lista de imagens como resposta
+
+        res.json(imageFiles);
     });
 });
 
-// Rota para servir a página HTML
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-});
-// Lista de cartas disponíveis
-let availableCards = [];
-
-// Função para carregar as cartas (arquivos PNG)
-function loadCards() {
-    const cardsDir = path.join(__dirname, 'public', 'cards');
-    
-    // Lê todos os arquivos da pasta 'cards'
-    fs.readdir(cardsDir, (err, files) => {
-        if (err) {
-            console.error('Erro ao ler a pasta de cartas:', err);
-            return;
-        }
-
-        // Filtra apenas os arquivos PNG
-        availableCards = files.filter(file => file.endsWith('.png'));
-        console.log(`Cartas carregadas: ${availableCards.length}`);
-    });
-}
-
-// Função para sortear uma carta aleatória
-function getRandomCard() {
-    if (availableCards.length === 0) {
-        io.emit('noMoreCards', 'Todas as cartas já foram sorteadas!');
-        return;
-    }
-
-    // Escolhe uma carta aleatória
-    const randomIndex = Math.floor(Math.random() * availableCards.length);
-    const randomCard = availableCards[randomIndex];
-
-    // Remove a carta sorteada da lista
-    availableCards.splice(randomIndex, 1);
-    
-    // Caminho completo da carta
-    const cardPath = path.join('cards', randomCard);  // Usando caminho relativo para servir a imagem
-    console.log('Carta sorteada:', cardPath);
-
-    // Envia a carta sorteada para todos os jogadores
-    io.emit('newCard', cardPath);
-}
-
-// Função para resetar o jogo
-function resetGame() {
-    loadCards(); // Recarrega as cartas
-}
-
-// Quando um jogador se conecta
-io.on('connection', (socket) => {
-    console.log('Novo jogador conectado');
-
-    // Quando um jogador clicar no monte
-    socket.on('clickMonte', () => {
-        getRandomCard(); // Sorteia e envia uma carta
-    });
-
-    // Quando um jogador pedir para reiniciar o jogo
-    socket.on('resetGame', () => {
-        resetGame(); // Reseta as cartas e o jogo
-    });
-
-    // Quando um jogador sai
-    socket.on('disconnect', () => {
-        console.log('Jogador desconectado');
-    });
+    res.render('index',)
 });
 
-// Inicia o servidor na porta especificada pelo OnRender
-const port = process.env.PORT || 3000;
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
-    loadCards(); // Carregar as cartas ao iniciar o servidor
 });
