@@ -7,24 +7,17 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
-});
+const io = socketIo(server);
 
 // Serve os arquivos estáticos da pasta 'public'
 app.use(express.static('public'));
-app.use('/socket.io', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'client-dist')));
-
 
 // Lista de cartas disponíveis
 let availableCards = [];
 
 // Função para carregar as cartas (arquivos PNG)
 function loadCards() {
-    const cardsDir = path.join('public', 'cards');
+    const cardsDir = path.join(__dirname, 'public', 'cards');
     
     // Lê todos os arquivos da pasta 'cards'
     fs.readdir(cardsDir, (err, files) => {
