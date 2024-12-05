@@ -160,55 +160,71 @@
     </div>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
-        const socket = io();
+        const socket = io('https://foubb.onrender.com');
         const monte = document.getElementById('monte');
         const cartaElement = document.getElementById('carta');
         const historicoLista = document.getElementById('historicoLista');
         const botaoNovoJogo = document.getElementById('botaoNovoJogo');
-
+    
         // Quando uma nova carta for sorteada
         socket.on('newCard', (cardPath) => {
-            // Aplica a animação de virada na carta
-            const cartaInner = cartaElement.querySelector('.carta-inner');
-            cartaInner.classList.add('flip'); // Adiciona a classe para virar a carta
+            // Verifica se o cartaElement existe antes de manipular seus filhos
+            if (cartaElement && cartaElement.querySelector('.carta-inner')) {
+                const cartaInner = cartaElement.querySelector('.carta-inner');
+                cartaInner.classList.add('flip'); // Adiciona a classe para virar a carta
+    
+                // Alterar a carta no meio da animação
+                setTimeout(() => {
+                    // Altera a carta exibida para a nova carta sorteada
+                    cartaElement.innerHTML = '<img src="img/capa.png" class="flip w-[210px] rounded">';
 
-            // Alterar a carta no meio da animação
-            setTimeout(() => {
-                // Altera a carta exibida para a nova carta sorteada
-                cartaElement.querySelector('.carta-front').innerHTML = `<img src="${cardPath}" class="w-[210px] rounded">`;
-            }, 500); // 500ms é no meio da animação, 1s / 2
-
-            // Após a animação de virada, adiciona a nova carta ao histórico
-            setTimeout(() => {
-                // Adiciona a carta ao início do histórico
-                const li = document.createElement('li');
-                li.innerHTML = `<img src="${cardPath}" class="rounded" alt="Carta" style="max-width: 150px; margin-right: 10px;">`;
-
-                // Adiciona o novo item ao início da lista
-                historicoLista.prepend(li);
-
-                // Reseta a animação, removendo a classe 'flip' para permitir a próxima rotação
-                cartaInner.classList.remove('flip');
-            }, 1000); // O tempo da animação (1000ms)
+                }, 500); // 500ms é no meio da animação, 1s / 2
+    
+                // Após a animação de virada, adiciona a nova carta ao histórico
+                setTimeout(() => {
+                    // Adiciona a carta ao início do histórico
+                    const li = document.createElement('li');
+                    li.innerHTML = `<img src="${cardPath}" class="rounded" alt="Carta" style="max-width: 150px; margin-right: 10px;">`;
+    
+                    // Adiciona o novo item ao início da lista
+                    historicoLista.prepend(li);
+    
+                    // Reseta a animação, removendo a classe 'flip' para permitir a próxima rotação
+                    cartaInner.classList.remove('flip');
+                }, 1000); // O tempo da animação (1000ms)
+            }
         });
-
-
+    
         // Quando todas as cartas forem sorteadas
         socket.on('noMoreCards', (message) => {
-            cartaElement.innerHTML = `<p>${message}</p>`;
+            if (cartaElement) {
+                cartaElement.innerHTML = `<p>${message}</p>`;
+            }
         });
-
+    
         // Quando clicar no monte (imagem)
         monte.addEventListener('click', () => {
             socket.emit('clickMonte'); // Solicita uma carta do servidor
         });
-
+    
         // Quando clicar no botão "Novo Jogo"
         botaoNovoJogo.addEventListener('click', () => {
             socket.emit('resetGame');
-            cartaElement.innerHTML = '<img src="img/capa.png" class="flip w-[210px] rounded">'; // Limpa a carta exibida
+            
+            // Resetar a carta
+            cartaElement.innerHTML = `
+                <div class="carta-inner">
+                    <div class="carta-front">
+                        <img src="img/capa.png" class="w-[210px] rounded">
+                    </div>
+                    <div class="carta-back">
+                        <img src="img/capa.png" class="w-[210px] rounded">
+                    </div>
+                </div>
+            `;
             historicoLista.innerHTML = '';
         });
+
     </script>
 </body>
 </html>

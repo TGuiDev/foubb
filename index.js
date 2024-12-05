@@ -17,7 +17,7 @@ let availableCards = [];
 
 // Função para carregar as cartas (arquivos PNG)
 function loadCards() {
-    const cardsDir = path.join(__dirname, 'public', 'cards');
+    const cardsDir = path.join('public', 'cards');
     
     // Lê todos os arquivos da pasta 'cards'
     fs.readdir(cardsDir, (err, files) => {
