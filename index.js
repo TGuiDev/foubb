@@ -13,27 +13,29 @@ const io = socketIo(server, {
     }
 });
 
-// Serve os arquivos estáticos da pasta 'public'
-app.use(express.static(path.join(__dirname, 'public')));
+// Caminho da pasta onde estão as cartas
+const cardsFolder = path.join(__dirname, 'public/cards');
 
-// Rota para obter a lista de cartas na pasta 'cards/'
+// Servir os arquivos estáticos
+app.use(express.static('public'));
+
 app.get('/api/cards', (req, res) => {
-    const cardsDir = path.join(__dirname, 'public', 'cards');
-    
-    // Lê a pasta de cartas
-    fs.readdir(cardsDir, (err, files) => {
+    fs.readdir(cardsFolder, (err, files) => {
         if (err) {
-            return res.status(500).send('Erro ao ler as cartas');
+            return res.status(500).send('Erro ao ler a pasta');
         }
-
-        // Filtra somente as imagens PNG
-        const cardImages = files.filter(file => file.endsWith('.png'));
         
-        // Retorna a lista de cartas
-        res.json(cardImages);
+        // Filtra os arquivos para pegar apenas imagens PNG
+        const imageFiles = files.filter(file => file.endsWith('.png')).map(file => `/cards/${file}`);
+        
+        res.json(imageFiles); // Envia a lista de imagens como resposta
     });
 });
 
+// Rota para servir a página HTML
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+});
 // Lista de cartas disponíveis
 let availableCards = [];
 
