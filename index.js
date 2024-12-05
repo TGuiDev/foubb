@@ -7,10 +7,17 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
 // Serve os arquivos estáticos da pasta 'public'
 app.use(express.static('public'));
+app.use('/socket.io', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'client-dist')));
+
 
 // Lista de cartas disponíveis
 let availableCards = [];
