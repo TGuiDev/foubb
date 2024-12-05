@@ -84,5 +84,5 @@ io.on('connection', (socket) => {
 // Inicia o servidor
 server.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
-    loadCards();  // Carrega as cartas quando o servidor é iniciado
+    loadCards();
 });
