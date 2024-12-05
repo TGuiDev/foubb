@@ -68,7 +68,7 @@
     }
 
     .carta-inner {
-        width: 450px;
+        width: 380px;
         position: relative;
         transform-style: preserve-3d;
         transition: transform 1s;
@@ -89,15 +89,15 @@
 
 <body class="bg-zinc-800 text-white">
     <div class="pt-8 mt-8 container justify-center m-auto w-max-screen px-5">
-        <div class="container flex gap-4 justify-center min-md:w-[450px]">
+        <div class="container flex gap-4 justify-center min-md:w-[380px]">
             <div id="monte">
             <div id="carta" class="carta-container">
                 <div class="carta-inner">
                     <div class="carta-front">
-                        <img src="img/capa.png" class="md:w-[450px] rounded">
+                        <img src="img/capa.png" class="md:w-[380px] rounded">
                     </div>
                     <div class="carta-back">
-                        <img src="img/capa.png" class="md:w-[450px] rounded">
+                        <img src="img/capa.png" class="md:w-[380px] rounded">
                     </div>
                 </div>
             </div>
@@ -106,9 +106,9 @@
             </div>
         </div>
 
-        <div id="historico" class="justify-left mt-[40rem] pt-9">
-            <h3><i class="fa-solid fa-clock-rotate-left"></i></h3>
-            <ul id="historicoLista" class="flex flex-wrap gap-1"></ul>
+        <div id="historico" class="justify-left mt-[32rem] pt-9">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Histórico de cartas</h3>
+            <ul id="historicoLista" class="flex flex-wrap gap-1 justify-center"></ul>
         </div>
     </div>
 
@@ -138,7 +138,7 @@
             const cartaInner = cartaElement.querySelector('.carta-inner');
             cartaInner.classList.add('flip');
             setTimeout(() => {
-                cartaElement.querySelector('.carta-front').innerHTML = `<img src="${cardPath}" class="md:w-[450px] rounded">`;
+                cartaElement.querySelector('.carta-front').innerHTML = `<img src="${cardPath}" class="md:w-[380px] rounded">`;
             }, 500);
 
             // Adiciona a carta ao histórico
@@ -164,7 +164,7 @@
 
         // Novo jogo
         function resetGame() {
-            cartaElement.innerHTML = '<img src="img/capa.png" class="flip md:w-[450px] rounded">';
+            cartaElement.innerHTML = '<img src="img/capa.png" class="flip md:w-[380px] rounded">';
             historicoLista.innerHTML = '';
         }
 
