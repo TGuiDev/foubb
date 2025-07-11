@@ -15,7 +15,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/275b5d5243.js" crossorigin="anonymous"></script>
 
-    <title>Faz Ou Bebe - Offline</title>
+    <title>Faz Ou Bebe</title>
 </head>
 
 <style>
@@ -65,10 +65,15 @@
     .carta-container {
         perspective: 1000px;
         display: inline-block;
+        width: 380px;
+        height: 570px;
+        /* altura aproximada da carta (ajuste conforme imagem) */
+        position: relative;
     }
 
     .carta-inner {
-        width: 380px;
+        width: 100%;
+        height: 100%;
         position: relative;
         transform-style: preserve-3d;
         transition: transform 1s;
@@ -80,7 +85,15 @@
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
+        top: 0;
+        left: 0;
     }
+
+    #card-text {
+        pointer-events: none;
+        z-index: 10;
+    }
+
 
     .carta-back {
         transform: rotateY(180deg);
@@ -88,90 +101,159 @@
 </style>
 
 <body class="bg-zinc-800 text-white">
-    <div class="pt-8 mt-8 container justify-center m-auto w-max-screen px-5">
-        <div class="container flex gap-4 justify-center min-md:w-[380px]">
+    <div class="pt-8 mt-5 m-auto container justify-center m-auto w-max-screen px-5">
+        <div class="flex flex-col items-center gap-2">
             <div id="monte">
-            <div id="carta" class="carta-container">
-                <div class="carta-inner">
-                    <div class="carta-front">
-                        <img src="img/capa.png" class="md:w-[380px] rounded">
-                    </div>
-                    <div class="carta-back">
-                        <img src="img/capa.png" class="md:w-[380px] rounded">
+                <div id="carta" class="carta-container">
+                    <div class="carta-inner">
+                        <div class="carta-front relative">
+                            <img src="img/card.png" class="md:w-[380px] rounded">
+                            <div id="card-text"
+                                class="text-[#b79851] absolute top-0 left-0 w-full h-full flex items-center justify-center px-10 text-center text-xl font-semibold drop-shadow-xl">
+                            </div>
+                        </div>
+                        <div class="carta-back">
+                            <img src="img/verso.png" class="md:w-[380px] rounded">
+                        </div>
                     </div>
                 </div>
             </div>
-
-                <!-- <img src="img/baralho.png" alt="Monte de cartas" class="w-[300px]"> -->
-            </div>
         </div>
 
-        <div id="historico" class="justify-left mt-[32rem] pt-9">
-            <h3><i class="fa-solid fa-clock-rotate-left"></i> Histórico de cartas</h3>
-            <ul id="historicoLista" class="flex flex-wrap gap-1 justify-center"></ul>
+        <div id="historico" class="mt-12 flex flex-col items-center gap-2">
+            <h3 class="text-xl font-bold text-yellow-400 mb-4">
+                <i class="fa-solid fa-clock-rotate-left"></i> Histórico de cartas
+            </h3>
+            <ul id="historicoLista" class="flex flex-wrap justify-center gap-4"></ul>
         </div>
     </div>
 
     <script>
-        let availableCards = [];
+        let randomText = [];
         loadCards();
 
         const monte = document.getElementById('monte');
         const cartaElement = document.getElementById('carta');
+        const cartaInner = cartaElement.querySelector('.carta-inner');
+        const cardTextElement = document.getElementById('card-text');
         const historicoLista = document.getElementById('historicoLista');
-        const botaoNovoJogo = document.getElementById('botaoNovoJogo');
 
-        // Função para sortear uma carta aleatória
-        function getRandomCard() {
-            if (availableCards.length === 0) {
-                cartaElement.innerHTML = "<p>Não há mais cartas disponíveis!</p>";
+        let numJogadores = 0;
+        let cartasViradas = 0;
+        let rodadaAtual = 0;
+
+        function atualizarRodadaNaTela() {
+            let rodadasDiv = document.getElementById('rodadaDisplay');
+            if (!rodadasDiv) {
+                rodadasDiv = document.createElement('div');
+                rodadasDiv.id = 'rodadaDisplay';
+                rodadasDiv.style.color = '#b79851';
+                rodadasDiv.style.fontSize = '1rem';
+                rodadasDiv.style.fontWeight = 'bold';
+                rodadasDiv.style.marginBottom = '1rem';
+                monte.parentElement.insertBefore(rodadasDiv, monte);
+            }
+            rodadasDiv.textContent = `Rodada: ${rodadaAtual}`;
+        }
+
+        function atualizarContadorCartas() {
+            let contadorDiv = document.getElementById('contadorCartas');
+            if (!contadorDiv) {
+                contadorDiv = document.createElement('div');
+                contadorDiv.id = 'contadorCartas';
+                contadorDiv.style.color = '#b79851';
+                contadorDiv.style.fontSize = '1rem';
+                contadorDiv.style.fontWeight = 'bold';
+                contadorDiv.style.marginBottom = '0.5rem';
+                monte.parentElement.insertBefore(contadorDiv, monte);
+            }
+            contadorDiv.textContent = `Cartas viradas: ${cartasViradas}`;
+        }
+
+        function getRandomText() {
+            if (numJogadores === 0) {
+                alert('Por favor, atualize a página e informe o número de jogadores antes de começar.');
                 return;
             }
 
-            const randomIndex = Math.floor(Math.random() * availableCards.length);
-            const cardPath = availableCards[randomIndex];
+            if (randomText.length === 0) {
+                cardTextElement.textContent = "Não há mais desafios!";
+                return;
+            }
 
-            // Remove a carta sorteada da lista
-            availableCards.splice(randomIndex, 1);
+            const randomIndex = Math.floor(Math.random() * randomText.length);
+            const texto = randomText[randomIndex];
+            randomText.splice(randomIndex, 1); // Remove da lista
 
-            // Aplica a animação de virada na carta
-            const cartaInner = cartaElement.querySelector('.carta-inner');
             cartaInner.classList.add('flip');
+
             setTimeout(() => {
-                cartaElement.querySelector('.carta-front').innerHTML = `<img src="${cardPath}" class="md:w-[380px] rounded">`;
+                cardTextElement.style.opacity = 0;
+            }, 400);
+
+            setTimeout(() => {
+                cardTextElement.innerHTML = texto.replace(/\n/g, '<br>');
+                cardTextElement.style.opacity = 1;
             }, 500);
 
-            // Adiciona a carta ao histórico
             setTimeout(() => {
-                const li = document.createElement('li');
-                li.innerHTML = `<img src="${cardPath}" class="rounded" alt="Carta" style="max-width: 150px; margin-right: 10px;">`;
-                historicoLista.prepend(li);
                 cartaInner.classList.remove('flip');
             }, 1000);
+
+            // Histórico (texto com número) - mostrando como carta bonitinha
+            cartasViradas++;
+            const li = document.createElement('li');
+            li.className = "bg-zinc-700 p-4 rounded-lg shadow-md text-white max-w-xs text-center break-words";
+            li.style.border = "2px solid #b79851";
+            li.style.minWidth = "250px";
+            li.style.userSelect = "none"; // pra não selecionar texto ao clicar
+
+            // Conteúdo da mini carta
+            li.innerHTML = `
+  <div class="font-semibold mb-2 text-yellow-400">Carta ${cartasViradas}</div>
+  <div>${texto.replace(/\n/g, '<br>')}</div>
+`;
+
+            historicoLista.prepend(li);
+
+            // Atualiza contadores na tela
+            atualizarContadorCartas();
+
+            if (cartasViradas % numJogadores === 0) {
+                rodadaAtual++;
+                atualizarRodadaNaTela();
+            }
         }
 
         function loadCards() {
             fetch('/api/cards')
                 .then(response => response.json())
                 .then(data => {
-                    data.forEach(src => {
-                        availableCards.push(src)
-                    });
+                    console.log(data); // Confirma se é array
+                    randomText = Array.isArray(data) ? data : [];
                 })
                 .catch(error => console.error('Erro ao carregar as cartas:', error));
         }
 
-
-        // Novo jogo
-        function resetGame() {
-            cartaElement.innerHTML = '<img src="img/capa.png" class="flip md:w-[380px] rounded">';
-            historicoLista.innerHTML = '';
-        }
-
-        // Quando clicar no monte (imagem)
-        monte.addEventListener('click', () => {
-            getRandomCard(); // Sorteia uma carta
+        // Pergunta o número de jogadores assim que carregar a página
+        window.addEventListener('load', () => {
+            let jogadores = prompt("Quantas pessoas vão jogar?");
+            numJogadores = parseInt(jogadores);
+            if (isNaN(numJogadores) || numJogadores <= 0) {
+                alert("Número inválido de jogadores! Atualize a página e tente novamente.");
+                numJogadores = 0;
+            } else {
+                rodadaAtual = 1;
+                atualizarRodadaNaTela();
+                atualizarContadorCartas();
+            }
         });
+
+        monte.addEventListener('click', () => {
+            getRandomText();
+        });
+
     </script>
 </body>
+
 </html>

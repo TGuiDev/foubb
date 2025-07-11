@@ -11,12 +11,12 @@ const app = express();
 const port = 3000;
 
 app.use(
-  session({
-    secret: "SDFG3-480H3-089HG-370G2-0GHGH-2G24G",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
-  })
+    session({
+        secret: "SDFG3-480H3-089HG-370G2-0GHGH-2G24G",
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: false },
+    })
 );
 
 app.use(bodyParser.json());
@@ -27,19 +27,23 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static('public'));
 
 const cardsFolder = path.join(__dirname, 'public/cards');
+const cardsJsonPath = path.join(__dirname, 'public/cards/cartas.json');
 
 
 app.get('/api/cards', async (req, res) => {
-    fs.readdir(cardsFolder, (err, files) => {
+    fs.readFile(cardsJsonPath, 'utf8', (err, data) => {
         if (err) {
-            return res.status(500).send('Erro ao ler a pasta');
+            return res.status(500).send('Erro ao ler o cards.json');
         }
 
-        const imageFiles = files
-            .filter(file => file.endsWith('.png'))
-            .map(file => `/cards/${file}`);  // Ajuste para o caminho correto
+        let cardTexts;
+        try {
+            cardTexts = JSON.parse(data);
+        } catch (e) {
+            return res.status(500).send('Erro ao parsear cards.json');
+        }
 
-        res.json(imageFiles);
+        res.json(cardTexts); // Envia o array direto
     });
 });
 
