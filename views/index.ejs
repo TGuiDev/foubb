@@ -62,6 +62,26 @@
         animation: virarCarta 1s ease-in-out forwards;
     }
 
+    /* Estado inicial: carta começa mostrando a capa */
+    .carta-inner.capa-inicial {
+        transform: rotateY(180deg);
+    }
+
+    /* Animação da primeira virada: sai da capa e vai para a escrita */
+    @keyframes virarPrimeiraCarta {
+        0% {
+            transform: rotateY(180deg);
+        }
+
+        100% {
+            transform: rotateY(360deg);
+        }
+    }
+
+    .flip-inicial {
+        animation: virarPrimeiraCarta 1s ease-in-out forwards;
+    }
+
     .carta-container {
         perspective: 1000px;
         display: inline-block;
@@ -105,7 +125,7 @@
         <div class="flex flex-col items-center gap-2">
             <div id="monte">
                 <div id="carta" class="carta-container">
-                    <div class="carta-inner">
+                    <div class="carta-inner capa-inicial">
                         <div class="carta-front relative">
                             <img src="img/card.png" class="md:w-[380px] rounded">
                             <div id="card-text"
@@ -141,6 +161,7 @@
         let numJogadores = 0;
         let cartasViradas = 0;
         let rodadaAtual = 0;
+        let primeiraCartaVirada = false;
 
         function atualizarRodadaNaTela() {
             let rodadasDiv = document.getElementById('rodadaDisplay');
@@ -185,7 +206,15 @@
             const texto = randomText[randomIndex];
             randomText.splice(randomIndex, 1); // Remove da lista
 
-            cartaInner.classList.add('flip');
+            const primeiraJogada = !primeiraCartaVirada;
+            primeiraCartaVirada = true;
+
+            if (primeiraJogada) {
+                cartaInner.classList.remove('capa-inicial');
+                cartaInner.classList.add('flip-inicial');
+            } else {
+                cartaInner.classList.add('flip');
+            }
 
             setTimeout(() => {
                 cardTextElement.style.opacity = 0;
@@ -197,7 +226,11 @@
             }, 500);
 
             setTimeout(() => {
-                cartaInner.classList.remove('flip');
+                if (primeiraJogada) {
+                    cartaInner.classList.remove('flip-inicial');
+                } else {
+                    cartaInner.classList.remove('flip');
+                }
             }, 1000);
 
             // Histórico (texto com número) - mostrando como carta bonitinha
