@@ -1,0 +1,18 @@
+{
+  "name": "Joguinhos dos Rangers",
+  "short_name": "Rangers",
+  "description": "Coleção de jogos para animar a resenha com os amigos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#131316",
+  "theme_color": "#131316",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
