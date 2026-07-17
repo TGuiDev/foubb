@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Drama, Lock, PartyPopper, Play, Spade, Star, UserRoundSearch, VenetianMask } from "lucide-react";
+import { ArrowRight, Drama, Lock, PartyPopper, Play, Radio, Spade, Star, UserRoundSearch, VenetianMask } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
@@ -46,6 +46,13 @@ const jogos: Jogo[] = [
     nome: "Qual é a Nota?",
     descricao: "Um jogador recebe uma nota secreta e responde categorias de acordo com ela.",
     icone: Star,
+    disponivel: true,
+  },
+  {
+    slug: "contato",
+    nome: "Contato",
+    descricao: "Um jogador guarda a palavra secreta e libera letras a cada contato acertado.",
+    icone: Radio,
     disponivel: true,
   },
 ];
