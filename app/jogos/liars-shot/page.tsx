@@ -333,6 +333,12 @@ export default function LiarsShot() {
     anexarListeners(socketRef.current);
   }, [anexarListeners]);
 
+  const sairDaPartida = useCallback(() => {
+    socketRef.current?.emit("game:leave", {}, () => {
+      sairDaSala();
+    });
+  }, [sairDaSala]);
+
   function toggleCarta(index: number) {
     setSelecionadas((prev) => {
       if (prev.includes(index)) return prev.filter((i) => i !== index);
@@ -620,6 +626,10 @@ export default function LiarsShot() {
             )}
 
             {erro && <p className="text-center text-sm text-destructive">{erro}</p>}
+
+            <Button variant="ghost" onClick={sairDaPartida} className="text-muted-foreground">
+              Sair da partida
+            </Button>
           </div>
         )}
 
