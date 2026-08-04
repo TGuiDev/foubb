@@ -17,7 +17,14 @@ const jogos: Jogo[] = [
     slug: "faz-ou-bebe",
     nome: "Faz ou Bebe",
     descricao: "O clássico jogo de desafios e goles para animar a resenha.",
-    imagem: "/img/baralho.png",
+    imagem: "/img/faz_ou_bebe.png",
+    disponivel: true,
+  },
+  {
+    slug: "liars-shot",
+    nome: "Liar's Shot",
+    descricao: "Jogo de blefe multiplayer em salas: minta, desconfie e grite MENTIROSO antes que seja tarde.",
+    imagem: "/img/liars_capa.png",
     disponivel: true,
   },
   {
